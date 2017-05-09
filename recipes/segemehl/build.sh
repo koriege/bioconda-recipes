@@ -1,11 +1,8 @@
-#!/bin/sh
+#!/bin/bash
+set -eu -o pipefail
+
 cd segemehl
-
-export C_INCLUDE_PATH=${PREFIX}/include:${PREFIX}/include/ncurses
-export LIBRARY_PATH=${PREFIX}/lib
-
-make -j 1 ## do not use >1 make threads!
-
-for i in *.x ; do
-    install ${i} ${PREFIX}/bin
-done
+sed -i -r 's/^\s*(C|LD)FLAGS\s*=\s*/override \1FLAGS += /' Makefile
+make CFLAGS="-I$PREFIX/include -I$PREFIX/include/ncurses" LDFLAGS="-L$PREFIX/lib"
+mkdir -p $PREFIX/bin
+cp segemehl.x $PREFIX/bin
